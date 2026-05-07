@@ -1,0 +1,21 @@
+request_id,request_date,cash_balance,inventory_value,response
+1,2025-04-01,45124.979999999996,4899.5,"Quote total: $65.28. Order fulfilled immediately. Sold items: 100 x Colored paper, 4 x Glossy paper, 200 x Cardstock."
+2,2025-04-03,45124.979999999996,4899.5,Quote total: $200.00. Inventory shortage detected (500 x Poster paper). Restock order placed. Estimated latest delivery date: 2025-04-07.
+3,2025-04-04,45124.979999999996,4899.5,Quote total: $0.00. Order fulfilled immediately. Sold items: 0 x A4 paper.
+4,2025-04-05,45124.979999999996,4899.5,Quote total: $120.00. Inventory shortage detected (105 x Cardstock). Restock order placed. Estimated latest delivery date: 2025-04-09.
+5,2025-04-05,45276.979999999996,4804.5,"Quote total: $152.00. Order fulfilled immediately. Sold items: 500 x Colored paper, 300 x Cardstock."
+6,2025-04-06,45276.979999999996,4804.5,"Quote total: $104.00. Inventory shortage detected (500 x Construction paper, 105 x Cardstock). Restock order placed. Estimated latest delivery date: 2025-04-10."
+7,2025-04-07,45151.979999999996,4804.5,"Quote total: $160.00. Inventory shortage detected (405 x Cardstock, 228 x A4 paper). Restock order placed. Estimated latest delivery date: 2025-04-11."
+8,2025-04-07,45154.68000000001,4803.2,Quote total: $3.74. Missing stock was ordered and delivered same day. Order fulfilled successfully.
+9,2025-04-07,45154.68000000001,4803.2,Quote total: $48.96. Inventory shortage detected (200 x Envelopes). Restock order placed. Estimated latest delivery date: 2025-04-11.
+13,2025-04-08,45154.68000000001,4803.2,Quote total: $48.00. Inventory shortage detected (105 x Cardstock). Restock order placed. Estimated latest delivery date: 2025-04-12.
+12,2025-04-08,45154.68000000001,4803.2,"Quote total: $51.20. Inventory shortage detected (100 x Paper napkins, 105 x Cardstock). Restock order placed. Estimated latest delivery date: 2025-04-12."
+10,2025-04-08,45154.68000000001,4803.2,Quote total: $280.00. Inventory shortage detected (405 x Cardstock). Restock order placed. Estimated latest delivery date: 2025-04-12.
+11,2025-04-08,45156.07000000001,4802.6,Quote total: $2.11. Missing stock was ordered and delivered same day. Order fulfilled successfully.
+14,2025-04-09,45138.32000000001,4818.35,Quote total: $120.00. Inventory shortage detected (300 x Cardstock). Restock order placed. Estimated latest delivery date: 2025-04-13.
+15,2025-04-12,44913.65000000001,4998.2,Quote total: $0.48. Order fulfilled immediately. Sold items: 3 x Colored paper.
+16,2025-04-13,44924.65000000001,5043.2,Quote total: $56.00. Order fulfilled immediately. Sold items: 500 x Construction paper.
+17,2025-04-14,44924.65000000001,5043.2,Quote total: $208.48. Inventory shortage detected (1000 x Paper cups). Restock order placed. Estimated latest delivery date: 2025-04-18.
+18,2025-04-14,44924.65000000001,5043.2,Quote total: $92.00. Inventory shortage detected (20 x Colored paper). Restock order placed. Estimated latest delivery date: 2025-04-15.
+19,2025-04-15,45164.25,4894.4,Quote total: $242.14. Missing stock was ordered and delivered same day. Order fulfilled successfully.
+20,2025-04-17,45164.25,4894.4,Quote total: $0.00. Order fulfilled immediately. Sold items: 0 x Flyers.

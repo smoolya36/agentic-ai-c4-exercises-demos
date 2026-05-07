@@ -10,7 +10,9 @@ from sqlalchemy.sql import text
 from datetime import datetime, timedelta
 from typing import Dict, List, Union
 from sqlalchemy import create_engine, Engine
-from smolagents import ToolCallingAgent, OpenAIServerModel, tool
+from openai import OpenAI
+from typing import Dict, List, Any
+
 
 
 # Create an SQLite database
@@ -172,14 +174,14 @@ def init_database(db_engine: Engine, seed: int = 137) -> Engine:
         # ----------------------------
         # 2. Load and initialize 'quote_requests' table
         # ----------------------------
-        quote_requests_df = pd.read_csv("agentic-ai-c4-exercises-demos/project/quote_requests.csv")
+        quote_requests_df = pd.read_csv("quote_requests.csv")
         quote_requests_df["id"] = range(1, len(quote_requests_df) + 1)
         quote_requests_df.to_sql("quote_requests", db_engine, if_exists="replace", index=False)
 
         # ----------------------------
         # 3. Load and transform 'quotes' table
         # ----------------------------
-        quotes_df = pd.read_csv("agentic-ai-c4-exercises-demos/project/quotes.csv")
+        quotes_df = pd.read_csv("quotes.csv")
         quotes_df["request_id"] = range(1, len(quotes_df) + 1)
         quotes_df["order_date"] = initial_date
 
@@ -597,10 +599,11 @@ def search_quote_history(search_terms: List[str], limit: int = 5) -> List[Dict]:
 
 dotenv.load_dotenv()
 
-model = OpenAIServerModel(
-    model_id="gpt-4o-mini",
+model = OpenAI(
+    
     api_key=os.getenv("UDACITY_OPENAI_API_KEY"),
-    api_base="https://openai.vocareum.com/v1",
+    base_url="https://openai.vocareum.com/v1"
+
 )
 
 
@@ -805,7 +808,7 @@ def get_catalog_item(item_name: str) -> Dict:
 
 # Tools for inventory agent
 
-@tool
+
 def check_inventory_for_item(item_name: str, as_of_date: str) -> Dict:
     """
     Check current stock, threshold, and pricing details for one item.
@@ -844,7 +847,7 @@ def check_inventory_for_item(item_name: str, as_of_date: str) -> Dict:
     }
 
 
-@tool
+
 def check_inventory_for_request(request_text: str, as_of_date: str) -> Dict:
     """
     Parse a request and check whether inventory can fulfill it.
@@ -899,7 +902,7 @@ def check_inventory_for_request(request_text: str, as_of_date: str) -> Dict:
 
 # Tools for quoting agent
 
-@tool
+
 def lookup_quote_history(request_text: str, limit: int = 3) -> List[Dict]:
     """
     Search historical quote examples relevant to the request.
@@ -916,7 +919,7 @@ def lookup_quote_history(request_text: str, limit: int = 3) -> List[Dict]:
     return search_quote_history(search_terms, limit=limit)
 
 
-@tool
+
 def generate_customer_quote(request_text: str, as_of_date: str, markup: float = 1.6) -> Dict:
     """
     Create a quote estimate from the parsed request and inventory state.
@@ -978,7 +981,7 @@ def generate_customer_quote(request_text: str, as_of_date: str, markup: float = 
 
 # Tools for ordering agent
 
-@tool
+
 def place_restock_order(request_text: str, as_of_date: str) -> Dict:
     """
     Place supplier stock orders for any missing inventory needed for the request.
@@ -1064,7 +1067,7 @@ def place_restock_order(request_text: str, as_of_date: str) -> Dict:
     }
 
 
-@tool
+
 def fulfill_customer_order(request_text: str, as_of_date: str, markup: float = 1.6) -> Dict:
     """
     Fulfill a customer order from current inventory by creating sales transactions.
@@ -1148,84 +1151,6 @@ class OrderingAgent:
     def fulfill(self, request_text: str, as_of_date: str) -> Dict:
         return fulfill_customer_order(request_text, as_of_date)
 
-
-class MunderDifflinOrchestrator:
-    """
-    Orchestrates the end-to-end flow:
-    1. Parse request + date
-    2. Generate quote
-    3. Check inventory
-    4. Fulfill immediately if possible
-    5. Otherwise place restock order and respond with ETA
-    """
-    def __init__(self, inventory_agent: InventoryAgent, quoting_agent: QuotingAgent, ordering_agent: OrderingAgent):
-        self.inventory_agent = inventory_agent
-        self.quoting_agent = quoting_agent
-        self.ordering_agent = ordering_agent
-
-    def handle_request(self, full_request: str) -> str:
-        request_text, request_date = extract_request_text_and_date(full_request)
-
-        quote = self.quoting_agent.prepare_quote(request_text, request_date)
-        if not quote["success"]:
-            return "Unable to generate a quote because the requested items could not be identified."
-
-        inventory_review = self.inventory_agent.review_request(request_text, request_date)
-
-        # Case 1: Everything is available now -> fulfill immediately
-        if inventory_review["all_available"]:
-            sale_result = self.ordering_agent.fulfill(request_text, request_date)
-            if sale_result["success"]:
-                return (
-                    f"Quote total: ${quote['total_amount']:.2f}. "
-                    f"Order fulfilled immediately. "
-                    f"Sold items: {', '.join([f'{x['quantity']} x {x['item_name']}' for x in sale_result['line_items']])}."
-                )
-            else:
-                return (
-                    f"Quote total: ${quote['total_amount']:.2f}. "
-                    f"Inventory was available, but fulfillment failed: {sale_result.get('message', 'Unknown error')}."
-                )
-
-        # Case 2: Inventory short -> place restock order
-        restock_result = self.ordering_agent.restock(request_text, request_date)
-
-        if restock_result["success"] and restock_result["status"] == "ordered":
-            latest_delivery = restock_result["latest_delivery_date"]
-
-            # If delivery date is same day, try fulfilling immediately after restock
-            if latest_delivery <= request_date:
-                sale_result = self.ordering_agent.fulfill(request_text, request_date)
-                if sale_result["success"]:
-                    return (
-                        f"Quote total: ${quote['total_amount']:.2f}. "
-                        f"Missing stock was ordered and delivered same day. "
-                        f"Order fulfilled successfully."
-                    )
-
-            shortage_summary = ", ".join(
-                [f"{s['shortage_quantity']} x {s['item_name']}" for s in quote["shortages"]]
-            )
-
-            return (
-                f"Quote total: ${quote['total_amount']:.2f}. "
-                f"Inventory shortage detected ({shortage_summary}). "
-                f"Restock order placed. Estimated latest delivery date: {latest_delivery}."
-            )
-
-        if restock_result["status"] == "insufficient_cash":
-            return (
-                f"Quote total: ${quote['total_amount']:.2f}, but the order cannot proceed yet. "
-                f"Restock requires ${restock_result['required_cash']:.2f} while only "
-                f"${restock_result['available_cash']:.2f} is available."
-            )
-
-        return (
-            f"Quote total: ${quote['total_amount']:.2f}. "
-            f"Order could not be completed: {restock_result.get('message', 'Unknown error')}."
-        )
-
-
 class InventoryAgent:
     def __init__(self):
         self.name = "InventoryAgent"
@@ -1286,10 +1211,16 @@ class MunderDifflinOrchestrator:
         if inventory_review["all_available"]:
             sale_result = self.ordering_agent.fulfill(request_text, request_date)
             if sale_result["success"]:
+                
+                sold_items = ", ".join(
+                            f"{x['quantity']} x {x['item_name']}"
+                            for x in sale_result["line_items"]
+                        )
+
                 return (
                     f"Quote total: ${quote['total_amount']:.2f}. "
                     f"Order fulfilled immediately. "
-                    f"Sold items: {', '.join([f'{x['quantity']} x {x['item_name']}' for x in sale_result['line_items']])}."
+                    f"Sold items: {sold_items}."
                 )
             else:
                 return (
@@ -1342,7 +1273,7 @@ def run_test_scenarios():
     print("Initializing Database...")
     init_database(db_engine)
     try:
-        quote_requests_sample = pd.read_csv("agentic-ai-c4-exercises-demos/project/quote_requests_sample.csv")
+        quote_requests_sample = pd.read_csv("quote_requests_sample.csv")
         quote_requests_sample["request_date"] = pd.to_datetime(
             quote_requests_sample["request_date"], format="%m/%d/%y", errors="coerce"
         )
