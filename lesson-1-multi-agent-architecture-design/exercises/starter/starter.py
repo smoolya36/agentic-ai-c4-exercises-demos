@@ -29,6 +29,7 @@ def create_diagram(title, nodes, edges, node_labels=None, node_types=None, edge_
     pos["Language Identification"] = (horizontal_spacing, 0)
     pos["Arrernte Language Specialist"] = (2*horizontal_spacing, vertical_spacing)
     pos["Pitjantjatjara Language Specialist"] = (2*horizontal_spacing, -vertical_spacing)
+    pos["Tulu Language Specialist"] = (2*horizontal_spacing, 2*vertical_spacing)
     pos["Knowledge Base Lookup"] = (3*horizontal_spacing, 0)
     
     node_colors = []
@@ -155,6 +156,7 @@ def extended_uluru_exercise():
         "Language Identification",
         "Arrernte Language Specialist",
         "Pitjantjatjara Language Specialist",
+        "Tulu Language Specialist",
         "Knowledge Base Lookup",
         # TODO: Add your new nodes here
     ]
@@ -163,12 +165,16 @@ def extended_uluru_exercise():
         ("Visitor Input", "Language Identification"),
         ("Language Identification", "Arrernte Language Specialist"),
         ("Language Identification", "Pitjantjatjara Language Specialist"),
+        ("Language Identification", "Tulu Language Specialist"),
         ("Arrernte Language Specialist", "Knowledge Base Lookup"),
         ("Pitjantjatjara Language Specialist", "Knowledge Base Lookup"),
+        ("Tulu Language Specialist", "Knowledge Base Lookup"),
         ("Knowledge Base Lookup", "Arrernte Language Specialist"),
         ("Knowledge Base Lookup", "Pitjantjatjara Language Specialist"),
+        ("Knowledge Base Lookup", "Tulu Language Specialist"),
         ("Arrernte Language Specialist", "Language Identification"),
         ("Pitjantjatjara Language Specialist", "Language Identification"),
+        ("Tulu Language Specialist", "Language Identification"),
         ("Language Identification", "Visitor Input"),
         # TODO: Add your new edges here
     ]
@@ -178,6 +184,7 @@ def extended_uluru_exercise():
         "Language Identification": "tool",
         "Arrernte Language Specialist": "agent",
         "Pitjantjatjara Language Specialist": "agent",
+        "Tulu Language Specialist": "agent",
         "Knowledge Base Lookup": "tool",
         # TODO: Add types for your new nodes here
     }
