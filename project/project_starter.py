@@ -8,6 +8,9 @@ from sqlalchemy.sql import text
 from datetime import datetime, timedelta
 from typing import Dict, List, Union
 from sqlalchemy import create_engine, Engine
+import re
+import json
+from smolagents import ToolCallingAgent, OpenAIServerModel, tool
 
 # Create an SQLite database
 db_engine = create_engine("sqlite:///munder_difflin.db")
@@ -168,14 +171,14 @@ def init_database(db_engine: Engine, seed: int = 137) -> Engine:
         # ----------------------------
         # 2. Load and initialize 'quote_requests' table
         # ----------------------------
-        quote_requests_df = pd.read_csv("quote_requests.csv")
+        quote_requests_df = pd.read_csv("agentic-ai-c4-exercises-demos/project/quote_requests.csv")
         quote_requests_df["id"] = range(1, len(quote_requests_df) + 1)
         quote_requests_df.to_sql("quote_requests", db_engine, if_exists="replace", index=False)
 
         # ----------------------------
         # 3. Load and transform 'quotes' table
         # ----------------------------
-        quotes_df = pd.read_csv("quotes.csv")
+        quotes_df = pd.read_csv("agentic-ai-c4-exercises-demos/project/quotes.csv")
         quotes_df["request_id"] = range(1, len(quotes_df) + 1)
         quotes_df["order_date"] = initial_date
 
@@ -591,6 +594,209 @@ def search_quote_history(search_terms: List[str], limit: int = 5) -> List[Dict]:
 
 # Set up and load your env parameters and instantiate your model.
 
+dotenv.load_dotenv()
+
+model = OpenAIServerModel(
+    model_id="gpt-4o-mini",
+    api_key=os.getenv("UDACITY_OPENAI_API_KEY"),
+    api_base="https://openai.vocareum.com/v1",
+)
+
+
+# ----------------------------
+# Helper structures / functions
+# ----------------------------
+CATALOG_DF = pd.DataFrame(paper_supplies)
+CATALOG_LOOKUP = {
+    row["item_name"].lower(): {
+        "item_name": row["item_name"],
+        "category": row["category"],
+        "unit_price": float(row["unit_price"]),
+    }
+    for _, row in CATALOG_DF.iterrows()
+}
+
+KEYWORD_TO_ITEM = {
+    "poster": "Large poster paper (24x36 inches)",
+    "banner": "Rolls of banner paper (36-inch width)",
+    "flyer": "Flyers",
+    "invitation": "Invitation cards",
+    "invite": "Invitation cards",
+    "folder": "Presentation folders",
+    "plate": "Paper plates",
+    "plates": "Paper plates",
+    "cup": "Paper cups",
+    "cups": "Paper cups",
+    "napkin": "Paper napkins",
+    "napkins": "Paper napkins",
+    "sticky": "Sticky notes",
+    "notes": "Sticky notes",
+    "notepad": "Notepads",
+    "notepads": "Notepads",
+    "envelope": "Envelopes",
+    "envelopes": "Envelopes",
+    "streamer": "Party streamers",
+    "streamers": "Party streamers",
+    "bag": "Paper party bags",
+    "bags": "Paper party bags",
+    "tag": "Name tags with lanyards",
+    "tags": "Name tags with lanyards",
+    "cardstock": "Cardstock",
+    "glossy": "Glossy paper",
+    "matte": "Matte paper",
+    "photo paper": "Photo paper",
+    "copy paper": "Standard copy paper",
+    "a4": "A4 paper",
+    "letterhead": "Letterhead paper",
+    "legal": "Legal-size paper",
+    "colored paper": "Colored paper",
+    "construction paper": "Construction paper",
+    "wrapping paper": "Wrapping paper",
+}
+
+UNIT_WORDS = r"(?:units?|sheets?|rolls?|plates?|cups?|napkins?|pads?|bags?|cards?|folders?|covers?|tags?|lanyards?|reams?|pieces?)"
+
+def extract_request_text_and_date(full_request: str):
+    """
+    Extracts clean request text and request date from strings like:
+    'Need 100 flyers (Date of request: 2025-01-03)'
+    """
+    match = re.search(r"\(Date of request:\s*([0-9]{4}-[0-9]{2}-[0-9]{2})\)\s*$", full_request)
+    if match:
+        request_date = match.group(1)
+        request_text = re.sub(r"\(Date of request:\s*[0-9]{4}-[0-9]{2}-[0-9]{2}\)\s*$", "", full_request).strip()
+        return request_text, request_date
+    return full_request.strip(), datetime.now().strftime("%Y-%m-%d")
+
+
+def infer_default_quantity(text: str) -> int:
+    """
+    Heuristic default quantity if no explicit quantity is found.
+    """
+    text_lower = text.lower()
+
+    # Large order hints
+    if any(word in text_lower for word in ["bulk", "large", "conference", "festival", "expo", "trade show"]):
+        return 500
+    if any(word in text_lower for word in ["medium", "office event", "seminar", "school event"]):
+        return 250
+    if any(word in text_lower for word in ["small", "team event", "birthday", "meeting"]):
+        return 100
+
+    # If any number exists in text, use the first reasonable one
+    nums = re.findall(r"\b(\d+)\b", text_lower)
+    if nums:
+        value = int(nums[0])
+        if value > 0:
+            return value
+
+    return 100
+
+
+def find_quantity_for_label(text: str, label: str) -> int:
+    """
+    Attempts to find a quantity associated with a given item label/keyword.
+    """
+    label_escaped = re.escape(label.lower())
+
+    patterns = [
+        rf"(\d+)\s+(?:{UNIT_WORDS}\s+)?(?:of\s+)?{label_escaped}",
+        rf"(\d+)\s+(?:{UNIT_WORDS}\s+)?{label_escaped}",
+    ]
+
+    for pattern in patterns:
+        match = re.search(pattern, text.lower())
+        if match:
+            return int(match.group(1))
+
+    return infer_default_quantity(text)
+
+
+def parse_requested_items(request_text: str) -> List[Dict]:
+    """
+    Parses request text into catalog items and quantities.
+    Uses exact item matches first, then keyword-based fallback.
+    """
+    text_lower = request_text.lower()
+    parsed_items = []
+    seen = set()
+
+    # 1) Exact item-name matches
+    catalog_names_sorted = sorted(CATALOG_LOOKUP.keys(), key=len, reverse=True)
+    for item_name_lower in catalog_names_sorted:
+        if item_name_lower in text_lower:
+            catalog_item = CATALOG_LOOKUP[item_name_lower]
+            qty = find_quantity_for_label(request_text, item_name_lower)
+            if catalog_item["item_name"] not in seen:
+                parsed_items.append({
+                    "item_name": catalog_item["item_name"],
+                    "quantity": int(qty),
+                    "unit_price": float(catalog_item["unit_price"]),
+                    "category": catalog_item["category"],
+                })
+                seen.add(catalog_item["item_name"])
+
+    # 2) Keyword fallback
+    if not parsed_items:
+        for keyword, item_name in KEYWORD_TO_ITEM.items():
+            if keyword in text_lower and item_name not in seen:
+                catalog_item = CATALOG_LOOKUP[item_name.lower()]
+                qty = find_quantity_for_label(request_text, keyword)
+                parsed_items.append({
+                    "item_name": catalog_item["item_name"],
+                    "quantity": int(qty),
+                    "unit_price": float(catalog_item["unit_price"]),
+                    "category": catalog_item["category"],
+                })
+                seen.add(item_name)
+
+    # 3) Generic print fallback
+    if not parsed_items:
+        if any(word in text_lower for word in ["print", "copies", "copy", "documents", "handouts"]):
+            fallback_item = CATALOG_LOOKUP["standard copy paper"]
+            qty = infer_default_quantity(request_text)
+            parsed_items.append({
+                "item_name": fallback_item["item_name"],
+                "quantity": int(qty),
+                "unit_price": float(fallback_item["unit_price"]),
+                "category": fallback_item["category"],
+            })
+
+    return parsed_items
+
+
+def extract_search_terms(request_text: str, parsed_items: List[Dict]) -> List[str]:
+    """
+    Builds search terms for quote-history lookup.
+    """
+    terms = []
+
+    for item in parsed_items:
+        item_words = item["item_name"].lower().split()
+        if item_words:
+            terms.extend(item_words[:2])
+
+    request_words = re.findall(r"[a-zA-Z]+", request_text.lower())
+    request_words = [w for w in request_words if len(w) > 3]
+    terms.extend(request_words[:5])
+
+    # Deduplicate while preserving order
+    deduped = []
+    seen = set()
+    for term in terms:
+        if term not in seen:
+            deduped.append(term)
+            seen.add(term)
+
+    return deduped[:6]
+
+
+def get_catalog_item(item_name: str) -> Dict:
+    item = CATALOG_LOOKUP.get(item_name.lower())
+    if item is None:
+        raise ValueError(f"Unknown catalog item: {item_name}")
+    return item
+
 
 """Set up tools for your agents to use, these should be methods that combine the database functions above
  and apply criteria to them to ensure that the flow of the system is correct."""
@@ -598,14 +804,425 @@ def search_quote_history(search_terms: List[str], limit: int = 5) -> List[Dict]:
 
 # Tools for inventory agent
 
+@tool
+def check_inventory_for_item(item_name: str, as_of_date: str) -> Dict:
+    """
+    Check current stock, threshold, and pricing details for one item.
+
+    Args:
+        item_name (str): Name of the catalog item.
+        as_of_date (str): Inventory date in YYYY-MM-DD format.
+
+    Returns:
+        Dict: stock details for the item.
+    """
+    stock_df = get_stock_level(item_name, as_of_date)
+    current_stock = int(stock_df["current_stock"].iloc[0]) if not stock_df.empty else 0
+
+    inventory_df = pd.read_sql("SELECT * FROM inventory", db_engine)
+    inv_match = inventory_df[inventory_df["item_name"].str.lower() == item_name.lower()]
+
+    if not inv_match.empty:
+        min_stock_level = int(inv_match["min_stock_level"].iloc[0])
+        unit_price = float(inv_match["unit_price"].iloc[0])
+        category = str(inv_match["category"].iloc[0])
+    else:
+        catalog_item = get_catalog_item(item_name)
+        min_stock_level = 0
+        unit_price = float(catalog_item["unit_price"])
+        category = str(catalog_item["category"])
+
+    return {
+        "item_name": item_name,
+        "as_of_date": as_of_date,
+        "current_stock": current_stock,
+        "min_stock_level": min_stock_level,
+        "unit_price": unit_price,
+        "category": category,
+        "below_minimum": current_stock < min_stock_level if min_stock_level > 0 else False,
+    }
+
+
+@tool
+def check_inventory_for_request(request_text: str, as_of_date: str) -> Dict:
+    """
+    Parse a request and check whether inventory can fulfill it.
+
+    Args:
+        request_text (str): Natural-language customer request.
+        as_of_date (str): Inventory date in YYYY-MM-DD format.
+
+    Returns:
+        Dict: parsed items, shortages, and whether all requested items are available.
+    """
+    parsed_items = parse_requested_items(request_text)
+    if not parsed_items:
+        return {
+            "parsed_items": [],
+            "all_available": False,
+            "shortages": [],
+            "message": "Could not determine requested items from the request."
+        }
+
+    inventory_snapshot = get_all_inventory(as_of_date)
+    shortages = []
+    item_status = []
+
+    for item in parsed_items:
+        available = int(inventory_snapshot.get(item["item_name"], 0))
+        shortage_qty = max(0, item["quantity"] - available)
+
+        item_status.append({
+            "item_name": item["item_name"],
+            "requested_quantity": int(item["quantity"]),
+            "available_quantity": available,
+            "unit_price": float(item["unit_price"]),
+        })
+
+        if shortage_qty > 0:
+            shortages.append({
+                "item_name": item["item_name"],
+                "required_quantity": int(item["quantity"]),
+                "available_quantity": available,
+                "shortage_quantity": shortage_qty,
+                "unit_price": float(item["unit_price"]),
+            })
+
+    return {
+        "parsed_items": parsed_items,
+        "item_status": item_status,
+        "all_available": len(shortages) == 0,
+        "shortages": shortages,
+    }
+
 
 # Tools for quoting agent
 
+@tool
+def lookup_quote_history(request_text: str, limit: int = 3) -> List[Dict]:
+    """
+    Search historical quote examples relevant to the request.
+
+    Args:
+        request_text (str): Natural-language customer request.
+        limit (int): Max number of history rows to return.
+
+    Returns:
+        List[Dict]: Matching historical quote examples.
+    """
+    parsed_items = parse_requested_items(request_text)
+    search_terms = extract_search_terms(request_text, parsed_items)
+    return search_quote_history(search_terms, limit=limit)
+
+
+@tool
+def generate_customer_quote(request_text: str, as_of_date: str, markup: float = 1.6) -> Dict:
+    """
+    Create a quote estimate from the parsed request and inventory state.
+
+    Args:
+        request_text (str): Natural-language customer request.
+        as_of_date (str): Quote date in YYYY-MM-DD format.
+        markup (float): Sales markup applied to unit prices.
+
+    Returns:
+        Dict: quote details, availability, historical context, and pricing summary.
+    """
+    parsed_items = parse_requested_items(request_text)
+    if not parsed_items:
+        return {
+            "success": False,
+            "message": "Unable to identify requested items for quoting.",
+            "parsed_items": [],
+            "total_amount": 0.0,
+        }
+
+    inventory_check = check_inventory_for_request(request_text, as_of_date)
+    history = lookup_quote_history(request_text, limit=3)
+
+    line_items = []
+    total_amount = 0.0
+
+    for item in parsed_items:
+        line_total = float(item["quantity"]) * float(item["unit_price"]) * float(markup)
+        total_amount += line_total
+        line_items.append({
+            "item_name": item["item_name"],
+            "quantity": int(item["quantity"]),
+            "unit_price": float(item["unit_price"]),
+            "quoted_unit_price": round(float(item["unit_price"]) * float(markup), 2),
+            "line_total": round(line_total, 2),
+        })
+
+    explanation_parts = []
+    explanation_parts.append(f"Quote prepared for {len(line_items)} item(s).")
+    if inventory_check["all_available"]:
+        explanation_parts.append("All requested items are currently available in inventory.")
+    else:
+        explanation_parts.append("Some items are currently short in inventory and may require supplier restocking.")
+    if history:
+        explanation_parts.append(f"Used {len(history)} historical quote example(s) for context.")
+
+    return {
+        "success": True,
+        "as_of_date": as_of_date,
+        "parsed_items": parsed_items,
+        "line_items": line_items,
+        "total_amount": round(total_amount, 2),
+        "can_fulfill_now": inventory_check["all_available"],
+        "shortages": inventory_check["shortages"],
+        "historical_examples": history,
+        "quote_explanation": " ".join(explanation_parts),
+    }
 
 # Tools for ordering agent
 
+@tool
+def place_restock_order(request_text: str, as_of_date: str) -> Dict:
+    """
+    Place supplier stock orders for any missing inventory needed for the request.
+
+    Args:
+        request_text (str): Natural-language customer request.
+        as_of_date (str): Request date in YYYY-MM-DD format.
+
+    Returns:
+        Dict: status of restock operation.
+    """
+    inventory_check = check_inventory_for_request(request_text, as_of_date)
+
+    if not inventory_check["parsed_items"]:
+        return {
+            "success": False,
+            "status": "failed",
+            "message": "Could not parse requested items; no restock order placed.",
+            "orders": [],
+        }
+
+    if inventory_check["all_available"]:
+        return {
+            "success": True,
+            "status": "not_needed",
+            "message": "No restock required; all items already available.",
+            "orders": [],
+        }
+
+    shortages = inventory_check["shortages"]
+    current_cash = get_cash_balance(as_of_date)
+
+    total_purchase_cost = 0.0
+    proposed_orders = []
+
+    for shortage in shortages:
+        item_name = shortage["item_name"]
+        qty = int(shortage["shortage_quantity"])
+        unit_price = float(shortage["unit_price"])
+        total_cost = qty * unit_price
+        delivery_date = get_supplier_delivery_date(as_of_date, qty)
+
+        proposed_orders.append({
+            "item_name": item_name,
+            "quantity": qty,
+            "unit_price": unit_price,
+            "total_cost": round(total_cost, 2),
+            "delivery_date": delivery_date,
+        })
+        total_purchase_cost += total_cost
+
+    if total_purchase_cost > current_cash:
+        return {
+            "success": False,
+            "status": "insufficient_cash",
+            "message": f"Insufficient cash to restock. Needed ${total_purchase_cost:.2f}, available ${current_cash:.2f}.",
+            "orders": proposed_orders,
+            "required_cash": round(total_purchase_cost, 2),
+            "available_cash": round(current_cash, 2),
+        }
+
+    created_transaction_ids = []
+    for order in proposed_orders:
+        txn_id = create_transaction(
+            item_name=order["item_name"],
+            transaction_type="stock_orders",
+            quantity=int(order["quantity"]),
+            price=float(order["total_cost"]),
+            date=order["delivery_date"],
+        )
+        created_transaction_ids.append(txn_id)
+
+    latest_delivery = max(order["delivery_date"] for order in proposed_orders)
+
+    return {
+        "success": True,
+        "status": "ordered",
+        "message": f"Restock order placed for {len(proposed_orders)} item(s).",
+        "orders": proposed_orders,
+        "transaction_ids": created_transaction_ids,
+        "latest_delivery_date": latest_delivery,
+        "total_purchase_cost": round(total_purchase_cost, 2),
+    }
+
+
+@tool
+def fulfill_customer_order(request_text: str, as_of_date: str, markup: float = 1.6) -> Dict:
+    """
+    Fulfill a customer order from current inventory by creating sales transactions.
+
+    Args:
+        request_text (str): Natural-language customer request.
+        as_of_date (str): Sale date in YYYY-MM-DD format.
+        markup (float): Sales markup applied to the base unit price.
+
+    Returns:
+        Dict: sale result and transaction details.
+    """
+    quote = generate_customer_quote(request_text, as_of_date, markup=markup)
+    if not quote["success"]:
+        return {
+            "success": False,
+            "status": "failed",
+            "message": "Unable to generate quote; cannot fulfill order.",
+        }
+
+    if not quote["can_fulfill_now"]:
+        return {
+            "success": False,
+            "status": "awaiting_stock",
+            "message": "Cannot fulfill order yet because inventory is insufficient.",
+            "shortages": quote["shortages"],
+        }
+
+    sale_transaction_ids = []
+    for line in quote["line_items"]:
+        txn_id = create_transaction(
+            item_name=line["item_name"],
+            transaction_type="sales",
+            quantity=int(line["quantity"]),
+            price=float(line["line_total"]),
+            date=as_of_date,
+        )
+        sale_transaction_ids.append(txn_id)
+
+    return {
+        "success": True,
+        "status": "fulfilled",
+        "message": "Customer order fulfilled successfully.",
+        "transaction_ids": sale_transaction_ids,
+        "line_items": quote["line_items"],
+        "total_amount": quote["total_amount"],
+    }
+
 
 # Set up your agents and create an orchestration agent that will manage them.
+
+class InventoryAgent:
+    def __init__(self):
+        self.name = "InventoryAgent"
+
+    def review_request(self, request_text: str, as_of_date: str) -> Dict:
+        return check_inventory_for_request(request_text, as_of_date)
+
+    def review_item(self, item_name: str, as_of_date: str) -> Dict:
+        return check_inventory_for_item(item_name, as_of_date)
+
+
+class QuotingAgent:
+    def __init__(self):
+        self.name = "QuotingAgent"
+
+    def prepare_quote(self, request_text: str, as_of_date: str) -> Dict:
+        return generate_customer_quote(request_text, as_of_date)
+
+    def search_history(self, request_text: str, limit: int = 3) -> List[Dict]:
+        return lookup_quote_history(request_text, limit=limit)
+
+
+class OrderingAgent:
+    def __init__(self):
+        self.name = "OrderingAgent"
+
+    def restock(self, request_text: str, as_of_date: str) -> Dict:
+        return place_restock_order(request_text, as_of_date)
+
+    def fulfill(self, request_text: str, as_of_date: str) -> Dict:
+        return fulfill_customer_order(request_text, as_of_date)
+
+
+class MunderDifflinOrchestrator:
+    """
+    Orchestrates the end-to-end flow:
+    1. Parse request + date
+    2. Generate quote
+    3. Check inventory
+    4. Fulfill immediately if possible
+    5. Otherwise place restock order and respond with ETA
+    """
+    def __init__(self, inventory_agent: InventoryAgent, quoting_agent: QuotingAgent, ordering_agent: OrderingAgent):
+        self.inventory_agent = inventory_agent
+        self.quoting_agent = quoting_agent
+        self.ordering_agent = ordering_agent
+
+    def handle_request(self, full_request: str) -> str:
+        request_text, request_date = extract_request_text_and_date(full_request)
+
+        quote = self.quoting_agent.prepare_quote(request_text, request_date)
+        if not quote["success"]:
+            return "Unable to generate a quote because the requested items could not be identified."
+
+        inventory_review = self.inventory_agent.review_request(request_text, request_date)
+
+        # Case 1: Everything is available now -> fulfill immediately
+        if inventory_review["all_available"]:
+            sale_result = self.ordering_agent.fulfill(request_text, request_date)
+            if sale_result["success"]:
+                return (
+                    f"Quote total: ${quote['total_amount']:.2f}. "
+                    f"Order fulfilled immediately. "
+                    f"Sold items: {', '.join([f'{x['quantity']} x {x['item_name']}' for x in sale_result['line_items']])}."
+                )
+            else:
+                return (
+                    f"Quote total: ${quote['total_amount']:.2f}. "
+                    f"Inventory was available, but fulfillment failed: {sale_result.get('message', 'Unknown error')}."
+                )
+
+        # Case 2: Inventory short -> place restock order
+        restock_result = self.ordering_agent.restock(request_text, request_date)
+
+        if restock_result["success"] and restock_result["status"] == "ordered":
+            latest_delivery = restock_result["latest_delivery_date"]
+
+            # If delivery date is same day, try fulfilling immediately after restock
+            if latest_delivery <= request_date:
+                sale_result = self.ordering_agent.fulfill(request_text, request_date)
+                if sale_result["success"]:
+                    return (
+                        f"Quote total: ${quote['total_amount']:.2f}. "
+                        f"Missing stock was ordered and delivered same day. "
+                        f"Order fulfilled successfully."
+                    )
+
+            shortage_summary = ", ".join(
+                [f"{s['shortage_quantity']} x {s['item_name']}" for s in quote["shortages"]]
+            )
+
+            return (
+                f"Quote total: ${quote['total_amount']:.2f}. "
+                f"Inventory shortage detected ({shortage_summary}). "
+                f"Restock order placed. Estimated latest delivery date: {latest_delivery}."
+            )
+
+        if restock_result["status"] == "insufficient_cash":
+            return (
+                f"Quote total: ${quote['total_amount']:.2f}, but the order cannot proceed yet. "
+                f"Restock requires ${restock_result['required_cash']:.2f} while only "
+                f"${restock_result['available_cash']:.2f} is available."
+            )
+
+        return (
+            f"Quote total: ${quote['total_amount']:.2f}. "
+            f"Order could not be completed: {restock_result.get('message', 'Unknown error')}."
+        )
 
 
 # Run your test scenarios by writing them here. Make sure to keep track of them.
@@ -613,9 +1230,9 @@ def search_quote_history(search_terms: List[str], limit: int = 5) -> List[Dict]:
 def run_test_scenarios():
     
     print("Initializing Database...")
-    init_database()
+    init_database(db_engine)
     try:
-        quote_requests_sample = pd.read_csv("quote_requests_sample.csv")
+        quote_requests_sample = pd.read_csv("agentic-ai-c4-exercises-demos/project/quote_requests_sample.csv")
         quote_requests_sample["request_date"] = pd.to_datetime(
             quote_requests_sample["request_date"], format="%m/%d/%y", errors="coerce"
         )
@@ -638,6 +1255,16 @@ def run_test_scenarios():
     ############
     ############
     ############
+    
+    inventory_agent = InventoryAgent()
+    quoting_agent = QuotingAgent()
+    ordering_agent = OrderingAgent()
+    orchestrator = MunderDifflinOrchestrator(
+        inventory_agent=inventory_agent,
+        quoting_agent=quoting_agent,
+        ordering_agent=ordering_agent,
+    )
+
 
     results = []
     for idx, row in quote_requests_sample.iterrows():
@@ -660,7 +1287,7 @@ def run_test_scenarios():
         ############
         ############
 
-        # response = call_your_multi_agent_system(request_with_date)
+        response = orchestrator.handle_request(request_with_date)
 
         # Update state
         report = generate_financial_report(request_date)
