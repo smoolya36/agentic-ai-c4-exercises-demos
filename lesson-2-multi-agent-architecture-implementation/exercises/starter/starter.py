@@ -65,16 +65,17 @@ def find_food(method: str) -> int:
     Returns:
         int: The amount of food found.
     """
-    # TODO: Implement this tool
-    # Hint: Use random.randint() to return different amounts based on method
-    # - If method is "foraging" (case-insensitive), return a random amount between 0-3
-    # - If method is "fishing" (case-insensitive), return a random amount between 2-7
-    # - Return 0 for any other method
-    
     food_found = 0
-    
-    # YOUR CODE HERE
-    
+
+    method_lower = method.strip().lower()
+
+    if method_lower == "foraging":
+        food_found = random.randint(0, 3)
+    elif method_lower == "fishing":
+        food_found = random.randint(2, 7)
+    else:
+        food_found = 0
+
     return food_found
 
 
@@ -196,22 +197,43 @@ class PenguinAgent(ToolCallingAgent):
         # but also know when to ask the scientist for help
         
         prompt = f"""
-        You are {self.name}. Your current state is: Food: {self.food}, Has Toy: {self.has_toy}.
-        
-        # TODO: Complete this prompt to guide the penguin's decision-making
-        # Your prompt should:
-        # - Explain the three action options available
-        # - Guide when to use 'find_food' tool (with required 'method' parameter)
-        # - Guide when to request resources from the scientist via text
-        # - Encourage smart decision-making based on current state
-        
-        Choose ONE action:
-        1. FIND FOOD YOURSELF: Use 'find_food' tool with method="fishing" or method="foraging"
-        2. REQUEST FOOD: Respond with text asking for food
-        3. REQUEST TOY: Respond with text asking for a toy
-        
-        YOUR ADDITIONAL GUIDANCE HERE
+        You are {self.name}. Your current state is:
+        - Food: {self.food}
+        - Has Toy: {self.has_toy}
+
+        You must choose EXACTLY ONE action this turn.
+
+        Available actions:
+        1. FIND FOOD YOURSELF
+        - Use the 'find_food' tool with one of these methods:
+            - method="fishing" -> usually better food returns
+            - method="foraging" -> smaller but safer/valid food returns
+        - Choose this when you can be self-sufficient, especially if you do not urgently need help.
+
+        2. REQUEST FOOD
+        - Respond with a short text request such as:
+            - "I need food"
+            - "I am hungry and need food"
+        - Choose this when your food is low and you need help from the scientist.
+
+        3. REQUEST TOY
+        - Respond with a short text request such as:
+            - "I need a toy"
+            - "I want a toy"
+        - Choose this when you already have enough food but do not have a toy yet.
+
+        Decision guidance:
+        - If your food is very low (0 or 1), prioritize getting food.
+        - If your food is low, it is often smart to first try finding food yourself using the tool.
+        - If your food is sufficient and you do not have a toy, you may request a toy.
+        - If you already have a toy and your food is not low, prefer finding food yourself instead of asking for help.
+        - Be practical and resource-aware. Do not ask for a toy if food is urgently needed.
+        - If you use the tool, call it once with either method="fishing" or method="foraging".
+        - If you do not use the tool, respond only with a short direct request for either food or a toy.
+
+        Choose exactly one action now.
         """
+
         
         final_llm_text_output = self.run(prompt)
 
