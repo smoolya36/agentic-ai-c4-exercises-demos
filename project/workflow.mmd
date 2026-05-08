@@ -1,0 +1,63 @@
+flowchart TD
+
+    %% ======================
+    %% Orchestrator
+    %% ======================
+    User[Customer Request] -->|request_text| ORC[MunderDifflinOrchestrator]
+    %% Inventory Agent + Tools
+    %% ======================
+    ORC -->|delegate inventory check| INV[InventoryAgent]
+
+    subgraph INV_TOOLS[InventoryAgent Tools]
+        style INV_TOOLS stroke-dasharray: 5 5
+        T_INV_ITEM[check_inventory_for_item]
+        T_INV_REQUEST[check_inventory_for_request]
+    end
+
+    INV -->|check stock by item| T_INV_ITEM
+    INV -->|check stock for full request| T_INV_REQUEST
+    T_INV_ITEM --> INV
+    T_INV_REQUEST --> INV
+    INV -->|inventory status| ORC
+
+    %% ======================
+    %% Quoting Agent + Tools
+    %% ======================
+    ORC -->|delegate quote generation| QUOTE[QuotingAgent]
+
+    subgraph QUOTE_TOOLS[QuotingAgent Tools]
+        style QUOTE_TOOLS stroke-dasharray: 5 5
+        T_HISTORY[lookup_quote_history]
+        T_QUOTE[generate_customer_quote]
+    end
+
+    QUOTE -->|retrieve similar quotes| T_HISTORY
+    QUOTE -->|generate quote| T_QUOTE
+    T_HISTORY --> QUOTE
+    T_QUOTE --> QUOTE
+    QUOTE -->|quote details| ORC
+
+    %% ======================
+    %% Ordering Agent + Tools
+    %% ======================
+    ORC -->|delegate order handling| ORDER[OrderingAgent]
+
+    subgraph ORDER_TOOLS[OrderingAgent Tools]
+        style ORDER_TOOLS stroke-dasharray: 5 5
+        T_RESTOCK[place_restock_order]
+        T_FULFILL[fulfill_customer_order]
+        T_DELIVERY[get_supplier_delivery_date]
+    end
+
+    ORDER -->|check supplier ETA| T_DELIVERY
+    ORDER -->|place stock order| T_RESTOCK
+    ORDER -->|write sales transaction| T_FULFILL
+    T_DELIVERY --> ORDER
+    T_RESTOCK --> ORDER
+    T_FULFILL --> ORDER
+    ORDER -->|fulfillment / restock result| ORC
+
+    %% ======================
+    %% Final Response
+    %% ======================
+    ORC -->|final response| Response[Customer Response]
