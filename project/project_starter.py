@@ -1464,13 +1464,25 @@ def run_test_scenarios():
         print(f"Response: {response}")
         print(f"Updated Cash: ${current_cash:.2f}")
         print(f"Updated Inventory: ${current_inventory:.2f}")
+        
+        response_lower = str(response).lower()
 
+        if "fulfilled" in response_lower:
+            request_status = "Fulfilled"
+        elif "restock" in response_lower or "delivery" in response_lower or "shortage" in response_lower:
+            request_status = "Unfulfilled / Restock Required"
+        else:
+            request_status = "Other / Review Needed"
+
+
+        
         results.append(
             {
                 "request_id": idx + 1,
                 "request_date": request_date,
                 "cash_balance": current_cash,
                 "inventory_value": current_inventory,
+                "status": request_status,
                 "response": response,
             }
         )
@@ -1485,7 +1497,16 @@ def run_test_scenarios():
     print(f"Final Inventory: ${final_report['inventory_value']:.2f}")
 
     # Save results
+    results_df = pd.DataFrame(results)
     pd.DataFrame(results).to_csv("test_results.csv", index=False)
+    
+    print("\n===== REQUEST FULFILLMENT SUMMARY =====")
+    summary_table = results_df[["request_id", "request_date", "status"]]
+    print(summary_table.to_string(index=False))
+
+    print("\n===== STATUS COUNTS =====")
+    print(results_df["status"].value_counts().to_string())
+
     return results
 
 

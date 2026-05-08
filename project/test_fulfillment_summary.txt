@@ -1,0 +1,27 @@
+===== REQUEST FULFILLMENT SUMMARY =====
+ request_id request_date                         status
+          1   2025-04-01 Unfulfilled / Restock Required
+          2   2025-04-03 Unfulfilled / Restock Required
+          3   2025-04-04                      Fulfilled
+          4   2025-04-05                      Fulfilled
+          5   2025-04-05                      Fulfilled
+          6   2025-04-06                      Fulfilled
+          7   2025-04-07                      Fulfilled
+          8   2025-04-07 Unfulfilled / Restock Required
+          9   2025-04-07                      Fulfilled
+         13   2025-04-08                      Fulfilled
+         12   2025-04-08 Unfulfilled / Restock Required
+         10   2025-04-08                      Fulfilled
+         11   2025-04-08                      Fulfilled
+         14   2025-04-09                      Fulfilled
+         15   2025-04-12 Unfulfilled / Restock Required
+         16   2025-04-13                      Fulfilled
+         17   2025-04-14                      Fulfilled
+         18   2025-04-14 Unfulfilled / Restock Required
+         19   2025-04-15 Unfulfilled / Restock Required
+         20   2025-04-17 Unfulfilled / Restock Required
+
+===== STATUS COUNTS =====
+status
+Fulfilled                         12
+Unfulfilled / Restock Required     8
