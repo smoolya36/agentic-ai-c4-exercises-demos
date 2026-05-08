@@ -1,282 +1,264 @@
-request_id,request_date,cash_balance,inventory_value,response
-1,2025-04-01,45059.7,4940.299999999999,"Dear Customer,
+request_id,request_date,cash_balance,inventory_value,status,response
+1,2025-04-01,45059.7,4940.299999999999,Unfulfilled / Restock Required,"Dear Customer,
 
-Thank you for your request for paper supplies for the upcoming ceremony. Here is a summary of your request and our inventory status:
+Thank you for your request for paper supplies for the ceremony. Here is the summary of your request:
 
-1. **Inventory Summary:**
-   - A4 Glossy Paper: Requested 200 sheets, **Available:** 4 sheets, **Shortage:** 196 sheets
-   - Heavy Cardstock (White): Requested 100 sheets, **Available:** 0 sheets, **Shortage:** 100 sheets
-   - Colored Paper (Assorted Colors): Requested 100 sheets, **Available:** 0 sheets, **Shortage:** 100 sheets
+1. **Inventory Summary:** All requested paper items are currently out of stock and require immediate restocking.
+   - **A4 Glossy Paper:** 0 sheets (Need 200)
+   - **Heavy Cardstock (White):** 0 sheets (Need 100)
+   - **Colored Paper (Assorted Colors):** 0 sheets (Need 100)
 
-2. **Quote Amount:** $0.00 (Due to unavailability and insufficient quantities)
+2. **Quote Amount:** Unfortunately, the total amount for your requested items is $0.00 due to shortages in stock; no fulfillment is possible at this moment.
 
-3. **Order Fulfillment Status:** The attempt to restock was unsuccessful due to a lack of available funds. A total cost of $40.80 was required to fulfill the order, but current cash resources are insufficient.
+3. **Order Status:** Restock orders are necessary for all items as they are critically low and not in stock.
 
-4. **Next Steps:** Management needs to review financial resources to enable the purchase. 
+4. **Estimated Delivery Timing:** We are working to restock these items as soon as possible. Please expect an update regarding delivery schedules soon.
 
-We appreciate your understanding and patience in this matter. If you have any further questions or need assistance, please feel free to reach out.
-
-Best regards,
-Munder Difflin Orchestrator Agent"
-2,2025-04-03,45059.7,4940.299999999999,"Thank you for your order! Here's a summary:
-
-- **Inventory Summary:**
-  - Colorful Poster Paper: Restock order placed for 500 sheets (Expected delivery: April 19, 2025, Cost: $125.00).
-  - Party Streamers: Restock order placed for 300 rolls (Expected delivery: April 19, 2025, Cost: $15.00).
-  - Balloons: Unable to process the order; further investigation is needed.
-
-- **Quote Amount:** Total for poster paper and streamers is $140.00.
-- **Order Status:** Restock orders were successfully placed for both colorful poster paper and party streamers; however, no order was placed for balloons due to a parsing issue.
-- **Estimated Delivery Timing:** Poster paper and streamers will be delivered by April 19, 2025."
-3,2025-04-04,45059.7,4940.299999999999,"The customer order for 10,000 sheets of A4 paper, 5,000 sheets of A3 paper, and 500 reams of printer paper was evaluated as follows:
-
-**Inventory Summary:**
-- A4 Paper: Shortage of 10,000 sheets, not available.
-- A3 Paper: Shortage of 5,000 sheets, not available.
-- Printer Paper: Shortage of 500 reams, restock order placed successfully.
-
-**Quote Amount:** $0 for all requested items due to unavailability, except for printer paper where a restock order has been placed for 500 reams at a total cost of $371.25.
-
-**Order Status:** Order fulfilled for printer paper with a restock order in place.
-
-**Estimated Delivery Timing:** Delivery set for April 19, 2025, for the printer paper."
-4,2025-04-05,45059.7,4940.299999999999,"Customer Request Summary:
-- The customer requested 500 sheets of high-quality recycled cardstock in various colors and 250 sheets of A4 size printer paper, with a required delivery date of April 15, 2025.
-
-Inventory Summary:
-- Both high-quality recycled cardstock and A4 size printer paper are currently unavailable, resulting in a shortage of 500 sheets of cardstock and 250 sheets of A4 paper.
-
-Quote Amount:
-- Due to the unavailability of the items, the quote amount is $0.00.
-
-Order Fulfillment Status:
-- The restock order could not be placed due to insufficient funds to cover the cost of the items.
-
-Next Steps:
-- It is essential to address cash flow issues to enable procurement for these items. Consider exploring alternative suppliers or securing necessary funds for future restock orders."
-5,2025-04-05,45059.7,4940.299999999999,"Customer Request Summary: 
-
-1. **Inventory Summary:** 
-   - 8.5""x11"" Colored Paper: 500 sheets requested, 0 sheets available, requiring restock. 
-   - Cardstock: 300 sheets requested, 0 sheets available, requiring restock.
-   - Decorative Washi Tape: Availability not confirmed due to request parsing issue. 
-
-2. **Quote Amount:** $248. 
-   - Breakdown:
-     - Colored Paper: $50.00
-     - Cardstock: $45.00
-     - Washi Tape: $100.00 (pending confirmation)
-     - Markup: $53.00
-
-3. **Restock Status:** Unable to fulfill or process restock orders due to insufficient cash flow. Immediate funding is required to restock items. 
-
-4. **Estimated Delivery Timing:** Not applicable; orders cannot be placed until cash availability improves."
-6,2025-04-06,45059.7,4940.299999999999,"Dear Customer,
-
-Thank you for your order request. Unfortunately, we are unable to fulfill the following items due to significant shortages and financial constraints:
-
-1. **Colorful Construction Paper:** Requested 500 sheets - Currently unavailable (0 sheets).
-2. **White Printer Paper:** Requested 300 sheets - Currently unavailable (0 sheets).
-3. **Cardstock in Various Colors:** Requested 200 sheets - Currently unavailable (0 sheets).
-
-The quote for these items is incomplete due to the shortages, and there was no total cost available as all items are out of stock. Additionally, the attempt to place a restock order failed due to insufficient cash. The total cost for restocking was estimated at $77.00, but we currently have $0.00 available.
-
-Please consider options for funding or alternative supplies. We recommend reviewing your budget or securing additional funding to proceed with your order. 
-
-We appreciate your understanding and are here to assist with any further inquiries or support needed in your search for these supplies.
-
-Best regards,
-The Munder Difflin Team"
-7,2025-04-07,45059.7,4940.299999999999,"Customer Request Summary:
-
-1. **Inventory Summary:**  
-   - Glossy A4 Paper: 500 sheets requested, 228 sheets restocked.  
-   - Matte A3 Paper: 1000 sheets requested, restock ordered.
-   - Poster Boards: 300 sheets requested, available in stock.  
-   - Heavyweight Cardstock: 200 sheets requested, available in stock.
-
-2. **Quote Amount:**  
-   - Total Cost of Restock: $191.40
-   - (Glossy A4: $11.40, Matte A3: $180)
-
-3. **Order Fulfillment Status:**  
-   - Restock order placed for glossy A4 and matte A3 paper; poster boards and heavyweight cardstock are in stock.
-
-4. **Estimated Delivery Timing:**  
-   - Restock delivery date for glossy A4 and matte A3 is April 19, 2025.
-
-Thank you for your order, and we will keep you updated on delivery!"
-8,2025-04-07,45059.7,4940.299999999999,"Thank you for your order request. Here is the summary:
-
-- **Inventory Summary**:
-  - **A4 Glossy Paper**: Unavailable (500 sheets)
-  - **A4 Matte Paper**: Shortage of 1000 sheets
-  - **A5 Colored Paper**: Unavailable (2000 sheets)
-  - **A4 Recycled Paper**: Shortage of 3000 sheets
-
-- **Quote Amount**: $0.00 due to unavailability of all requested items.
-- **Order Status**: A restock order has been placed for the available items. 
-- **Fulfilled Items**:
-  - **A4 Recycled Paper**: 4 units @ $0.08 each, totaling $0.32
-  - **A4 Matte Paper**: 4 units @ $0.18 each, totaling $0.72
-- **Total Purchase Cost**: $1.04
-- **Delivery Timing**: Expected by April 15, 2025. 
-
-Please let us know if you need further assistance or wish to inquire about other items."
-9,2025-04-07,45059.7,4940.299999999999,"Dear Customer,
-
-Thank you for your order request. Here is a summary of your order for paper supplies:
-
-1. **Inventory Summary**:
-   - A4 White Printer Paper: Out of stock (200 sheets needed, restock not required)
-   - A3 Glossy Paper: Out of stock (100 sheets needed, restock not required)
-   - 100% Recycled Kraft Paper Envelopes: 50 packets ordered, restock successful.
-
-2. **Quote Amount**: Total amount is $0.00 for unfulfilled items, $2.50 for the restocked envelopes.
-
-3. **Order Status**: Restock order placed for 50 packets of 100% recycled kraft paper envelopes.
-
-4. **Estimated Delivery**: The envelopes will be delivered by April 11, 2025.
-
-Please let us know if there is anything else you need!
+If you have any other requests or need further assistance, please let us know.
 
 Best regards,
 Munder Difflin Orchestrator Agent"
-13,2025-04-08,45059.7,4940.299999999999,"### Customer Order Summary
-- **Items Ordered:** 500 sheets of A4 printing paper and 200 sheets of cardstock.
-- **Inventory Status:** Both A4 printing paper and cardstock are out of stock; significant shortages exist for both items.
-- **Quote Amount:** Unable to provide a valid quote due to the cardstock shortage. Historical price estimate: A4 paper at $0.05/sheet and cardstock at $0.15/sheet.
-- **Order Status:** Unable to fulfill order due to insufficient cash for restocking. 
-- **Next Steps:** Review budget or consider alternative funding solutions for essential supplies."
-12,2025-04-08,45059.7,4940.299999999999,"Customer Inventory Summary:
-- 200 sheets of colorful cardstock: Sufficient stock available, no restock needed.
-- 500 sheets of standard printer paper: Restock order placed, expected delivery April 19, 2025 (Total Cost: $20.00).
-- 100 paper napkins: Restock order placed, expected delivery April 16, 2025 (Total Cost: $2.00).
-
-Total Quote Amount: $32.00.
-
-Order Status: Restock orders successfully placed for standard printer paper and paper napkins, colorful cardstock is available in stock.
-
-Please note that the paper supplies will not arrive by the original requested date of April 15, 2025; the standard printer paper will arrive four days later."
-10,2025-04-08,45059.7,4940.299999999999,"Customer Order Summary: 
-- **Inventory Status**: Both high-quality glossy paper and sturdy cardstock are out of stock. 
-- **Quote Amount**: The generated quote amounts to $0.00 due to pricing setup issues. 
-- **Order Status**: Since both items are out of stock, a restock order is necessary to fulfill the order. However, considering the inventory statuses, restock was noted unnecessary and the items are still unavailable. 
-- **Estimated Delivery Timing for Restocking the Order**: N/A, as restock was not placed due to inventory being at zero."
-11,2025-04-08,45059.7,4940.299999999999,"Customer Order Summary:
-- **Inventory Status:** A3 glossy paper is available (500 sheets needed, 587 sheets in stock), A4 matte paper has a shortage (300 sheets needed, 272 sheets in stock).
-- **Quote Amount:** Unfortunately, we were unable to provide a quote due to stock shortages affecting the papers.
-- **Order Status:** The order for A3 glossy paper will be fulfilled, while the A4 matte paper cannot be fully fulfilled due to insufficient stock.
-- **Next Steps:** Recommend restocking both A3 glossy and A4 matte papers to prepare for future demands."
-14,2025-04-09,45059.7,4940.299999999999,"Dear Customer,
-
-Thank you for your order request for high-quality paper supplies for your upcoming performance. Here's a summary of your request:
-
-- **Inventory Summary:** 
-  - A4 Paper: 5,000 sheets (Available: Yes)
-  - Poster Paper: 2,000 sheets (Available: Yes)
-  - Cardstock: 500 sheets (Available: Yes)
-
-- **Quote Amount:** $0 (indicating no costs incurred due to availability)
-- **Order Status:** The requested items are available and have been successfully fulfilled.
-- **Estimated Delivery Timing:** Your order will be delivered by April 15, 2025.
-
-If you have any further questions or require additional supplies, please don't hesitate to reach out.
-
-Best regards,
-The Munder Difflin Team."
-15,2025-04-12,45057.2,4940.299999999999,"Customer Request Summary:<br>- **Items Requested:**<br>  1. 10,000 sheets of A4 white paper: **Unavailable** (Severe shortage)<br>  2. 5,000 sheets of A3 colored paper: **Unavailable** (Severe shortage)<br>  3. 500 reams of cardboard for signage: **Not recognized** by inventory.<br><br>- **Inventory Summary:**<br>All items are either unavailable or unrecognized in the system.<br><br>- **Quote Amount:** $0.00 (due to unavailability)<br><br>- **Order Status:** Could not be fulfilled or restocked due to insufficient cash reserves and unavailable items.<br><br>- **Next Steps:** Consider alternative suppliers for A4 and A3 paper and confirm details of cardboard signage requirements."
-16,2025-04-13,45057.2,4940.299999999999,"Inventory Summary: A4 Printer Paper (available), Colorful Construction Paper (200 sheets restocked), Poster Board (100 sheets restocked). Quote Amount: $25.40. Order Status: Restocked for colorful construction paper and poster board. Estimated Delivery: April 19, 2025."
-17,2025-04-14,45057.2,4940.299999999999,"Dear Customer,
-
-Thank you for your order! Here is a summary of your paper supply request:
-
-**Inventory Summary:**
-- **A4 White Printer Paper:** 
-  - Ordered: 1000 sheets 
-  - Available in stock: 728 sheets (Restock order placed)
-  - Estimated delivery: April 19, 2025
-  - Cost: $36.40
-
-- **A3 Colored Paper (Assorted Colors):**
-  - Ordered: 500 sheets 
-  - Available in stock: 500 sheets 
-  - Cost: $0.00
-
-- **Table Napkins (White):** 
-  - Ordered: 2000 napkins 
-  - Available in stock: 2000 napkins (Restock order placed)
-  - Estimated delivery: April 22, 2025
-  - Cost: $40.00
-
-- **Biodegradable Paper Cups:** 
-  - Ordered: 1000 cups 
-  - Available in stock: 0 cups (Restock order placed)
-  - Estimated delivery: April 19, 2025
-  - Cost: $80.00
-
-- **Biodegradable Paper Plates:** 
-  - Ordered: 500 plates 
-  - Available in stock: 500 plates 
-  - Cost: $0.00
-
-**Quote Amount:** $156.40 for the ordered items.
-
-**Order Status:**
-- Restock orders were placed for A4 white printer paper, biodegradable paper cups, and table napkins. The A3 colored paper and biodegradable plates are already in stock; therefore, no restock was needed for these items.
-
-If you have any questions or need further assistance, please let us know. We're here to help!
-
-Best regards,
-Munder Difflin Orchestrator Agent"
-18,2025-04-14,45057.2,4940.299999999999,"The customer's request for paper supplies has been processed:
+2,2025-04-03,45059.7,4940.299999999999,Unfulfilled / Restock Required,"The customer requested an order for 500 sheets of colorful poster paper, 300 rolls of streamers, and 200 balloons for the parade. 
 
 ### Inventory Summary:
-- High-Quality White Cardstock: Available (500 sheets)
-- Standard Printing Paper: 1000 sheets ordered (Expected Delivery: April 19, 2025)
-- Colored Paper (Assorted Colors): Available (200 sheets)
+- **Colorful Poster Paper:** 500 sheets requested but currently 0 sheets available (restock needed).
+- **Streamers:** 300 rolls requested but currently 0 rolls available (restock needed).
+- **Balloons:** Could not retrieve inventory information.
 
 ### Quote Amount:
-- Total Cost for the ordered standard printing paper: $40.00
+- Total quote for the available items (only considering poster paper) is **$1250.**
 
 ### Order Status:
-- A restock order was placed for 1000 sheets of standard printing paper. The order has been successfully processed and will be delivered by April 19, 2025. 
+- Unable to fulfill or restock due to insufficient cash, which was $0. Required cash for restocking was $140 ($125 for poster paper and $15 for streamers).
 
-Thus, the customer's request will be partially fulfilled, with the order being ready ahead of the ceremony."
-19,2025-04-15,45052.41,4940.299999999999,"Dear Customer,
+### Estimated Delivery Timing if Restocking was Needed:
+- Initially set for delivery on April 15, 2025, but currently not applicable due to inability to place restock orders."
+3,2025-04-04,45059.7,4940.299999999999,Fulfilled,"Customer request summary:
+- **Requested Items:** 10,000 sheets of A4 paper, 5,000 sheets of A3 paper, and 500 reams of printer paper.
+- **Inventory Status:** All items are currently out of stock, particularly A4 paper which shows a significant shortage.
+- **Customer Quote:** $0.00 due to the unavailability of stock.
+- **Order Fulfillment:** No order was fulfilled as items are out of stock. A restock order is in process to replenish the inventory.
+- **Estimated Delivery Timing:** We will restock these items, and notify the customer about potential availability timelines once confirmed."
+4,2025-04-05,45059.7,4940.299999999999,Fulfilled,"Customer Request Summary:
+- Requested Items:
+  - 500 sheets of high-quality, recycled cardstock in various colors (Out of Stock)
+  - 250 sheets of A4 size printer paper (Out of Stock)
 
-Thank you for your order request for the upcoming exhibition. Here is a summary of your order status:
+- Quote Amount: $750 (not fulfillable due to stock shortages)
+- Inventory Status: Both cardstock and printer paper are currently out of stock.
+- Order Status: No order was fulfilled or restocked as the items were indicated to be in stock, despite previous reports of shortages. Further investigation into inventory accuracy may be necessary."
+5,2025-04-05,45059.7,4940.299999999999,Fulfilled,"Dear Customer,
 
-- **Inventory Summary:**
-  - A4 Glossy Paper: Shortage - Requested 2000 sheets, available 0 sheets.
-  - A3 Matte Paper: Shortage - Requested 1500 sheets, available 0 sheets.
-  - Cardstock: Ordered 1000 sheets, 405 sheets were ordered due to shortages.
+Here is the summary of your order request for 500 sheets of 8.5""x11"" colored paper, 300 sheets of cardstock in various colors, and 200 rolls of decorative washi tape:
 
-- **Quote Amount:** The total quote for the restock order of cardstock is $60.75.
+**Inventory Summary:** 
+- **Colored Paper:** 500 sheets requested, but stock is currently 0 (shortage of 500 sheets).
+- **Cardstock:** 300 sheets requested, stock is 0 (shortage of 300 sheets).
+- **Decorative Washi Tape:** Availability could not be determined.
 
-- **Restock Order Status:**
-  - A restock order for cardstock has been placed and is estimated to arrive by April 24, 2025.
-  - Unfortunately, the A4 Glossy Paper and A3 Matte Paper cannot be fulfilled at this time due to inventory shortages.
+**Quote Amount:** $122
 
-If you have any further questions or need to discuss alternative options, please feel free to reach out.
+**Order Status:** Unfortunately, both orders for colored paper and cardstock could not be fulfilled due to insufficient cash available for restocking (total needed: $95.00).
 
-Best regards,
-[Your Name]"
-20,2025-04-17,45050.41,4940.299999999999,"Customer request summary:
-- Requested items: 5,000 flyers, 2,000 posters, and 10,000 tickets.
+If you have any further questions or would like to discuss alternative options, please feel free to reach out.
 
-Inventory Status:
-- Flyers: Available but no stock found, meeting minimum level (0), no critical need to restock.
-- Posters: Not available, restocking needed (2,000).
-- Tickets: Unrecognized in inventory; further investigation required.
+Thank you!"
+6,2025-04-06,45059.7,4940.299999999999,Fulfilled,"The customer request for 500 sheets of colorful construction paper, 300 sheets of white printer paper, and 200 sheets of cardstock cannot be fulfilled due to complete inventory shortages across all items. 
 
-Quote Information:
-- Posters: $25.00 for 2,000 posters; quotes for flyers and tickets could not be generated.
-- Total quoted amount incomplete due to unidentified items.
+### Inventory Summary:
+- **Colorful Construction Paper:** Shortage of 500 sheets.
+- **White Printer Paper:** Shortage of 300 sheets.
+- **Cardstock:** Shortage of 200 sheets.
 
-Current Status:
-- Posters could not be restocked due to insufficient funds ($3,500.00 needed, $0.00 available).
-- Further investigation into ticket classification could not be executed.
+### Quote Amount:
+Due to the significant shortages, a full quote could not be provided. Historical total for similar order was **$130**, but current availability hinders this.
 
-Final Recommendation:
-It is advised to resolve the cash flow issue before attempting to place restock orders or providing a full quote to the customer."
+### Order Fulfilled or Restocked:
+Orders for restocking could not be placed due to insufficient funding, with a required total of **$77.00** for restock, which is currently unavailable.
+
+### Estimated Delivery Timing:
+Restock orders could have been delivered by **April 6, 2025**, but cannot be placed until sufficient cash is secured."
+7,2025-04-07,45059.7,4940.299999999999,Fulfilled,"Summary for Customer Request:
+
+- **Inventory Summary**:
+  - Glossy A4 Paper: Restocked 228 sheets, need 500 sheets total (cost: $11.40; delivery by April 19, 2025).
+  - Matte A3 Paper: Fully restocked: 1000 sheets (cost: $180.00; delivery by April 19, 2025).
+  - Poster Boards: Sufficient stock available, no action needed.
+  - Heavyweight Cardstock: Sufficient stock available, no action needed.
+
+- **Quote Amount**: The total quoted amount is $0.00 due to shortages in requested items.
+
+- **Order Status**: A restock order was fulfilled for the glossy A4 paper and matte A3 paper; poster boards and heavyweight cardstock were not restocked as they are available in inventory.
+
+- **Estimated Delivery Timing**: Items will be delivered by April 19, 2025."
+8,2025-04-07,45059.7,4940.299999999999,Unfulfilled / Restock Required,"Dear Customer,
+
+Thank you for your order request for paper supplies for your upcoming ceremony. Unfortunately, we regret to inform you that there are significant shortages for all the items you requested:
+- **500 sheets of A4 glossy paper** (Out of stock)
+- **1000 sheets of A4 matte paper** (Out of stock)
+- **2000 sheets of A5 colored paper** (Out of stock)
+- **3000 sheets of A4 recycled paper** (Out of stock)
+
+The total quote amount for your order stands at $0.00 since none of the items are currently available. We attempted to place a restock order to accommodate your request by April 15, 2025, but we were unable to proceed due to insufficient funds.
+
+To meet your needs, we suggest that you review alternative options, adjust your order, or consider a different timeframe. Our team is here to assist you with any adjustments you may need.
+
+Warm regards,
+Munder Difflin Team"
+9,2025-04-07,45059.7,4940.299999999999,Fulfilled,"Dear Customer,
+
+Here is a summary of your order request:
+
+**Inventory Summary:**  
+- **A4 White Printer Paper:** 200 sheets - Available 
+- **A3 Glossy Paper:** 100 sheets - Available 
+- **100% Recycled Kraft Paper Envelopes:** 50 packets - Out of stock (restock order placed)
+
+**Quote Amount:** $2.50 for 50 packets of kraft paper envelopes.
+
+**Order Status:**  
+- The order for A4 white printer paper and A3 glossy paper has been fulfilled as they are in stock.
+- A restock order has been placed for 50 packets of the kraft paper envelopes, with an expected delivery date of April 11, 2025.
+
+Thank you for your order! If you have any further questions or need assistance, feel free to reach out.
+
+Best regards,"
+13,2025-04-08,45059.7,4940.299999999999,Fulfilled,"Customer Order Summary:
+
+- **Items Ordered:**
+  - 500 sheets of A4 printing paper (current shortfall: 272 sheets; only 228 sheets ordered)
+  - 200 sheets of cardstock (available in stock)
+
+- **Quote Amount:** $0 (due to stock shortages initially)
+- **Order Fulfillment Status:** Partially fulfilled. A restock order for A4 paper was placed for 228 sheets. The cardstock does not require a restock.
+- **Estimated Delivery Timing:** A4 printing paper delivery is expected by April 14, 2025."
+12,2025-04-08,45059.7,4940.299999999999,Unfulfilled / Restock Required,"**Inventory Summary:**
+- **Colorful Cardstock:** 200 sheets - No restock needed as items are available.
+- **Standard Printer Paper:** 500 sheets - Shortage confirmed; restock order placed.
+- **Paper Napkins:** 100 - Shortage confirmed; restock order placed.
+
+**Quote Amount:** $6.00
+
+**Order Status:** Restock orders placed for 100 paper napkins and 500 sheets of standard printer paper.
+
+**Delivery Timing:**
+- Paper Napkins will be delivered on April 16, 2025.
+- Standard Printer Paper will be delivered on April 19, 2025.
+
+Note: The restock deliveries will be slightly after the requested date of April 15, 2025."
+10,2025-04-08,45059.7,4940.299999999999,Fulfilled,"Customer Order Summary:
+
+1. **Inventory Summary:**
+   - **High-Quality Glossy Paper:** 500 sheets - **Status:** Unavailable, 500 sheets shortage.
+   - **Sturdy Cardstock:** 300 sheets - **Status:** Unavailable, 300 sheets shortage.
+
+2. **Quote Amount:** $280.00 (for a fulfilled order that is possible). 
+
+3. **Order Status:** Since both items are unavailable with significant shortages, the order will be restocked to meet the demand by April 15, 2025.
+
+4. **Estimated Delivery Timing:** The delivery will be expected by April 15, 2025, if the restock process goes smoothly."
+11,2025-04-08,45059.7,4940.299999999999,Fulfilled,"Thank you for your order! Here is the summary:
+
+- Inventory Status: Both A3 glossy paper and A4 matte paper are currently out of stock, leading to shortages. 
+- Quote Amount: The total for your order of 500 sheets of A3 glossy paper and 300 sheets of A4 matte paper is $174.
+- Order Fulfillment: Both items are out of stock, and we have placed a restock order to meet your needs by April 15, 2025.
+- Estimated Delivery Timing: Your order will be fulfilled once the restocking is completed by the specified date."
+14,2025-04-09,45059.7,4940.299999999999,Fulfilled,"Customer Order Summary:
+
+1. **Inventory Summary:**
+   - **A4 Paper:** Shortage of 5,000 sheets (available quantity: 0)
+   - **Poster Paper:** Shortage of 2,000 sheets (available quantity: 0)
+   - **Cardstock:** Shortage of 500 sheets (available quantity: 0)
+
+2. **Quote Amount:** Currently recorded as $0 due to quantity recording issues in the system, but pricing for requested items is:
+   - **A4 Paper:** $0.05 per sheet, total $250 (unless updated in the system)
+   - **Poster Paper:** $0.25 per sheet, total $500 (unless updated in the system)
+   - **Cardstock:** $0.15 per sheet, total $75 (unless updated in the system)
+
+3. **Order Status:** Order was not fulfilled due to shortages of all requested items.
+
+4. **Next Steps:** Restock order to procure 5,000 sheets of A4 paper, 2,000 sheets of poster paper, and 500 sheets of cardstock is necessary to meet delivery deadline of April 15, 2025."
+15,2025-04-12,45057.2,4940.299999999999,Unfulfilled / Restock Required,"The customer request for paper supplies could not be fully processed due to several issues:
+
+- **Inventory Summary**:
+  - **A4 White Paper**: 0 sheets available, indicating a shortage (requested 10,000 sheets).
+  - **A3 Colored Paper**: 0 sheets available, indicating a shortage (requested 5,000 sheets).
+  - **Cardboard for Signage**: Unable to determine availability due to unsupported category in the system.
+
+- **Quote Amount**: The quoting process was incomplete, with key items like A4 white paper and cardboard not receiving quotes.
+
+- **Order Status**: Restock orders were not successfully placed due to parsing errors, despite the system indicating an availability status.
+
+- **Next Steps**: A review of item descriptions and further clarification with the inventory management regarding cardboard is recommended. 
+
+The customer should be informed of these issues so adjustments can be made to the order or further assistance can be provided."
+16,2025-04-13,45057.2,4940.299999999999,Fulfilled,"Customer Order Summary:
+
+- **Inventory Status:**
+  - A4 Printer Paper: Out of stock (shortage of 500 sheets)
+  - Colorful Construction Paper: Out of stock (shortage of 200 sheets)
+  - Poster Board: Out of stock (insufficient stock to fulfill 100 sheets)
+
+- **Quote Amount:** $100.00 (for the available poster board, which could not be fulfilled)
+
+- **Order Status:** Both restock and fulfillment orders could not be completed due to out-of-stock issues and insufficient funds.
+
+- **Next Steps:** Funds need to be secured to place a restock order for the A4 printer paper and colorful construction paper."
+17,2025-04-14,45045.8,4951.699999999999,Fulfilled,"Dear Customer,
+
+Thank you for your order of paper supplies for the upcoming reception. Here’s a summary of your order:
+
+### Inventory Summary:
+- **A4 White Printer Paper:** 500 sheets available (500 sheets need to be restocked, delivery by April 19, 2025).
+- **A3 Colored Paper (Assorted Colors):** 500 sheets available.
+- **Table Napkins (White):** Unsupported, no available inventory.
+- **Biodegradable Paper Cups:** 0 available (1000 cups needed, restock order placed, delivery by April 19, 2025).
+- **Biodegradable Paper Plates:** 500 plates fulfilled and available.
+
+### Quote Amount:
+Total cost of the fulfilled items is **$2,606.00**. 
+
+### Order Status:
+- Fulfilled: 500 Paper Plates and 500 A3 Colored Paper.
+- Restocked: A4 White Printer Paper and Biodegradable Cups (delivery expected by April 19, 2025).
+
+Due to the unsupported status of table napkins, we recommend sourcing these from another supplier to ensure they arrive on time.
+
+If you have any questions or need further assistance, feel free to reach out.
+
+Best Regards,
+Munder Difflin Team"
+18,2025-04-14,45045.8,4951.699999999999,Unfulfilled / Restock Required,"Customer Request Summary:
+- Requested Supplies: 500 sheets of high-quality white cardstock, 1000 sheets of standard printing paper, and 200 sheets of colored paper.
+
+1. **Inventory Summary**: 
+   - High-quality white cardstock: **In stock**
+   - Standard printing paper: **Restock ordered (arriving April 19, 2025)**
+   - Colored paper: **In stock**
+
+2. **Quote Amount**: $265 (final total after discounts)
+
+3. **Order Status**: Restock order placed for standard printing paper.
+
+4. **Estimated Delivery Timing**: Paper will be delivered by **April 19, 2025**."
+19,2025-04-15,45125.560000000005,4901.4,Unfulfilled / Restock Required,"Dear Customer,
+
+Thank you for your order request for paper supplies for the upcoming exhibition. Here is a summary of the status regarding your requested items:
+
+- **Inventory Summary:** 
+   - A4 Glossy Paper: **2000 sheets unavailable** 
+   - A3 Matte Paper: **1500 sheets unavailable** 
+   - Cardstock in Assorted Colors: **1000 sheets unavailable** 
+
+Due to shortages of all requested items, we have generated a quote indicating that the total amount is **$0.00** since we cannot fulfill your order completely.
+
+- **Order Status:** All requested items are currently unavailable in inventory, and no restock orders were processed.
+
+- **Estimated Delivery Timing:** Unfortunately, as the items are not available, we cannot guarantee delivery by your requested date of April 20, 2025.
+
+We recommend considering alternative items or dates for your exhibition needs.
+
+Thank you for your understanding.
+
+Best Regards,"
+20,2025-04-17,45123.560000000005,4901.4,Unfulfilled / Restock Required,"Inventory Summary: All requested items (5,000 flyers, 2,000 posters, and 10,000 tickets) are currently unavailable, with significant shortages in flyers and posters. The quote for the posters is $400, with part fulfillment possible. Order Status: Inventory for flyers and posters is confirmed available, thus no orders were needed for these items. However, ticket inventory remains unclear. Estimated delivery date is set for May 15, 2025."
