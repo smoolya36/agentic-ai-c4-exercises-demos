@@ -1243,6 +1243,12 @@ class InventoryAgent(ToolCallingAgent):
             model=model,
             tools=[check_inventory_for_item, check_inventory_for_request],
         )
+        
+        self.description = (
+            "Checks stock availability for requested paper items, identifies shortages, "
+            "and determines whether restocking is needed."
+            )
+
 
     def handle(self, request_text: str, as_of_date: str) -> str:
         prompt = f"""
@@ -1278,6 +1284,7 @@ class QuotingAgent(ToolCallingAgent):
             model=model,
             tools=[lookup_quote_history, generate_customer_quote],
         )
+        self.description = "Generates customer quotes and uses quote history when helpful."
 
     def handle(self, request_text: str, as_of_date: str) -> str:
         prompt = f"""
@@ -1309,6 +1316,7 @@ class OrderingAgent(ToolCallingAgent):
             model=model,
             tools=[place_restock_order, fulfill_customer_order],
         )
+        self.description = "Fulfills orders or places restock orders depending on inventory and delivery timelines."
 
     def handle_fulfillment(self, request_text: str, as_of_date: str) -> str:
         prompt = f"""
@@ -1332,32 +1340,64 @@ class OrderingAgent(ToolCallingAgent):
         """
         return self.run(prompt)
 
-class MunderDifflinOrchestrator:
+class MunderDifflinOrchestrator(ToolCallingAgent):
     def __init__(self):
         self.inventory_agent = InventoryAgent()
         self.quoting_agent = QuotingAgent()
         self.ordering_agent = OrderingAgent()
 
-    def handle_request(self, full_request: str) -> str:
-        request_text, request_date = extract_request_text_and_date(full_request)
-
-        # Step 1: Inventory review
-        inventory_result = self.inventory_agent.handle(request_text, request_date)
-
-        # Step 2: Quote generation
-        quote_result = self.quoting_agent.handle(request_text, request_date)
-
-        # Step 3: Operational fulfillment / restocking
-        ordering_result = self.ordering_agent.handle_fulfillment(request_text, request_date)
-
-        final_response = (
-            f"Customer Request: {request_text}\n\n"
-            f"Inventory Review:\n{inventory_result}\n\n"
-            f"Quote Summary:\n{quote_result}\n\n"
-            f"Order Processing:\n{ordering_result}"
+        super().__init__(
+            name="MunderDifflinOrchestrator",
+            model=model,
+            tools=[],
+            managed_agents=[
+                self.inventory_agent,
+                self.quoting_agent,
+                self.ordering_agent,
+            ],
+        )
+        
+        self.description = (
+            "Main orchestrator for customer requests. Delegates work to inventory, quoting, "
+            "and ordering agents, and returns a final customer-facing summary."
         )
 
-        return final_response
+
+    def handle_request(self, full_request: str) -> str:
+        request_text, request_date = extract_request_text_and_date(full_request)
+        self.memory.steps = []
+
+        prompt = f"""
+        You are the Munder Difflin Orchestrator Agent.
+
+        You must coordinate the other agents to process this customer request.
+
+        Customer request: {request_text}
+        Request date: {request_date}
+
+        Available managed agents:
+        - InventoryAgent
+        - QuotingAgent
+        - OrderingAgent
+
+        Required workflow:
+        1. Delegate to InventoryAgent to determine whether requested items are available and whether there are shortages.
+        2. Delegate to QuotingAgent to generate the customer quote.
+        3. Delegate to OrderingAgent to either:
+        - fulfill the order if inventory is available, or
+        - place a restock order if inventory is insufficient.
+        4. Return a final concise response for the customer.
+
+        Your final response must include:
+        - a short inventory summary
+        - quote amount
+        - whether the order was fulfilled or restocked
+        - estimated delivery timing if restocking was needed
+
+        You must delegate the work to the managed agents instead of doing it yourself.
+        """
+
+        return self.run(prompt)
 
 # Run your test scenarios by writing them here. Make sure to keep track of them.
 
